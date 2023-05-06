@@ -44,8 +44,7 @@ def collect_vacancies(id):
         ids.extend(x["id"] for x in data["items"])
 
     jobs_list = []
-    errors = []
-    with ThreadPoolExecutor(max_workers=2) as executor:
+    with ThreadPoolExecutor(max_workers=1) as executor:
         for vacancy in tqdm(
                 executor.map(get_vacancy, ids),
                 desc="Get data via HH API",
@@ -60,10 +59,9 @@ def main():
     f_roles = open("unique_prof.json", "r")
     roles = json.load(f_roles)
     for role in roles:
-        if role["id"] in ("8", "9", "18"):
-            continue
-        f_role = open(f"{role['id']} {role['name']}", "w", encoding="utf8")
-        json.dump(collect_vacancies(role["id"]), f_role, indent=2, ensure_ascii=False)
+        if role["id"] not in ("8", "9", "18"):
+            f_role = open(f"vacancies/{role['id']} {role['name']}.json", "w", encoding="utf8")
+            json.dump(collect_vacancies(role["id"]), f_role, indent=2, ensure_ascii=False)
 
 
 
